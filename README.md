@@ -2,34 +2,43 @@
 
 > A social media app where users broadcast activities and reconnect with lost connections.
 
-## 🚀 Quick Start (Local Development)
+## 🚀 Quick Start
 
 ### Prerequisites
 - **Node.js** v18+
-- **MongoDB** running locally on port 27017 (or use Docker)
-- **npm** or **yarn**
+- **MySQL** running locally
+- **npm**
 
-### 1. Clone & Install
+### 1. Install
 
 ```bash
 cd Reconnect
 
-# Install backend dependencies
+# Backend
 cd server && npm install && cd ..
 
-# Install frontend dependencies
+# Frontend
 cd client && npm install && cd ..
 ```
 
-### 2. Start MongoDB
+### 2. Configure Database
 
-If MongoDB is not already running:
-```bash
-# Using Docker (recommended)
-docker run -d -p 27017:27017 --name reconnect-mongo mongo:7
+Create a MySQL database:
+```sql
+CREATE DATABASE reconnect;
+```
 
-# Or start your local MongoDB service
-mongod
+Update `server/.env` with your MySQL credentials:
+```env
+PORT=5001
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=reconnect
+JWT_SECRET=reconnect_jwt_secret_key_2024_super_secure
+JWT_EXPIRES_IN=7d
+CLIENT_URL=http://localhost:5173
 ```
 
 ### 3. Seed the Database
@@ -52,9 +61,9 @@ This creates **5 demo users** with activities, connections, and engagements:
 ### 4. Start the App
 
 ```bash
-# Terminal 1 - Backend (port 5000)
+# Terminal 1 - Backend (port 5001)
 cd server
-npm run dev
+node src/index.js
 
 # Terminal 2 - Frontend (port 5173)
 cd client
@@ -65,130 +74,51 @@ Open **http://localhost:5173** in your browser.
 
 ---
 
-## 🐳 Docker Setup
-
-```bash
-docker-compose up --build
-```
-
-Then seed the database:
-```bash
-docker exec reconnect-server node src/seed.js
-```
-
-App runs at **http://localhost:3000**
-
----
-
 ## 📡 API Endpoints
 
 ### Authentication
-```bash
-# Signup
-curl -X POST http://localhost:5000/api/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test User","email":"test@example.com","password":"password123"}'
-
-# Login
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"alex@reconnect.app","password":"password123"}'
-
-# Get current user
-curl http://localhost:5000/api/auth/me \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/signup` | Create account |
+| POST | `/api/auth/login` | Login |
+| GET | `/api/auth/me` | Get current user |
 
 ### Users
-```bash
-# Search users
-curl "http://localhost:5000/api/users/search?q=maya" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Get user profile
-curl http://localhost:5000/api/users/USER_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Update profile
-curl -X PUT http://localhost:5000/api/users/profile \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Updated Name","bio":"New bio"}'
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/users/search?q=` | Search users |
+| GET | `/api/users/:id` | Get profile |
+| PUT | `/api/users/profile` | Update profile |
 
 ### Activities
-```bash
-# Create activity
-curl -X POST http://localhost:5000/api/activities \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Board Game Night","description":"Join us!","location":"My place","time":"2026-03-01T18:00:00Z","audience":"friends"}'
-
-# Get feed
-curl http://localhost:5000/api/activities/feed \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Get user activities
-curl http://localhost:5000/api/activities/user/USER_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Delete activity
-curl -X DELETE http://localhost:5000/api/activities/ACTIVITY_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/activities` | Create activity |
+| GET | `/api/activities/feed` | Get feed |
+| GET | `/api/activities/user/:id` | User activities |
+| DELETE | `/api/activities/:id` | Delete activity |
 
 ### Connections
-```bash
-# Send connection request
-curl -X POST http://localhost:5000/api/connections/request \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"recipientId":"USER_ID"}'
-
-# Accept connection
-curl -X PUT http://localhost:5000/api/connections/CONNECTION_ID/accept \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Get friends list
-curl http://localhost:5000/api/connections/friends \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Get pending requests
-curl http://localhost:5000/api/connections/pending \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Remove connection
-curl -X DELETE http://localhost:5000/api/connections/CONNECTION_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/connections/request` | Send request |
+| PUT | `/api/connections/:id/accept` | Accept |
+| DELETE | `/api/connections/:id` | Remove |
+| GET | `/api/connections/friends` | List friends |
+| GET | `/api/connections/pending` | Pending requests |
 
 ### Engagements
-```bash
-# Toggle engagement (interested / me_too)
-curl -X POST http://localhost:5000/api/engagements/toggle \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"activityId":"ACTIVITY_ID","type":"interested"}'
-
-# Get activity engagements
-curl http://localhost:5000/api/engagements/activity/ACTIVITY_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/engagements/toggle` | Toggle reaction |
+| GET | `/api/engagements/activity/:id` | Get reactions |
 
 ### Notifications
-```bash
-# Get notifications
-curl http://localhost:5000/api/notifications \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Mark as read
-curl -X PUT http://localhost:5000/api/notifications/NOTIFICATION_ID/read \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Mark all as read
-curl -X PUT http://localhost:5000/api/notifications/read-all \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/notifications` | Get notifications |
+| PUT | `/api/notifications/:id/read` | Mark read |
+| PUT | `/api/notifications/read-all` | Mark all read |
 
 ---
 
@@ -198,14 +128,13 @@ curl -X PUT http://localhost:5000/api/notifications/read-all \
 Reconnect/
 ├── server/                    # Express.js backend
 │   ├── src/
-│   │   ├── config/           # DB & Socket.io config
+│   │   ├── config/           # MySQL (Sequelize) & Socket.io
 │   │   ├── controllers/      # Route handlers
 │   │   ├── middleware/        # Auth & validation
-│   │   ├── models/           # Mongoose schemas
+│   │   ├── models/           # Sequelize models & associations
 │   │   ├── routes/           # API routes
 │   │   ├── index.js          # Server entry point
 │   │   └── seed.js           # Database seeder
-│   ├── Dockerfile
 │   └── package.json
 ├── client/                    # React frontend
 │   ├── src/
@@ -215,10 +144,7 @@ Reconnect/
 │   │   ├── App.jsx           # Main app with routing
 │   │   ├── index.css         # Design system
 │   │   └── main.jsx          # Entry point
-│   ├── Dockerfile
-│   ├── nginx.conf
 │   └── package.json
-├── docker-compose.yml
 └── README.md
 ```
 
@@ -228,21 +154,18 @@ Reconnect/
 |-------|-----------|
 | Frontend | React 18, React Router, Axios |
 | Backend | Node.js, Express.js |
-| Database | MongoDB, Mongoose |
+| Database | MySQL, Sequelize ORM |
 | Auth | JWT (jsonwebtoken, bcryptjs) |
 | Real-time | Socket.io |
-| Styling | Custom CSS (dark theme) |
-| DevOps | Docker, Docker Compose, Nginx |
+| Styling | Custom CSS |
 
 ## ✨ Features
 
 - 🔐 JWT authentication (signup/login)
-- 👤 User profiles with avatar, bio
+- 👤 User profiles with avatar & bio
 - 📢 Activity broadcasting (friends/public)
 - 📡 Chronological activity feed
 - 👥 Connections (send/accept/remove)
 - ❤️ Engagement (Interested / Me Too!)
 - 🔔 Real-time notifications via Socket.io
-- 🌙 Beautiful dark theme UI
 - 📱 Responsive design
-- 🐳 Docker ready

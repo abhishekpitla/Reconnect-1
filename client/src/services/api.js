@@ -54,6 +54,12 @@ export const getPendingRequests = () => api.get('/connections/pending');
 // Engagements
 export const toggleEngagement = (activityId, type) => api.post('/engagements/toggle', { activityId, type });
 export const getActivityEngagements = (activityId) => api.get(`/engagements/activity/${activityId}`);
+export const respondToInvite = (engagementId, status) => api.post('/engagements/respond', { engagementId, status });
+export const getPendingInvites = () => api.get('/engagements/pending');
+
+// Chats
+export const getActivityMessages = (activityId) => api.get(`/chats/${activityId}`);
+export const sendChatMessage = (data) => api.post('/chats', data);
 
 // Notifications
 export const getNotifications = (page = 1) => api.get(`/notifications?page=${page}`);

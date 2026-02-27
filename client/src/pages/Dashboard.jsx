@@ -10,18 +10,13 @@ const formatDate = (date) => {
     if (diff < 60000) return 'Just now';
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-const formatActivityTime = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
+const formatActivityTime = (date) =>
+    new Date(date).toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
     });
-};
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -37,8 +32,6 @@ const Dashboard = () => {
             const res = await getFeed(page);
             setActivities(res.data.activities);
             setPagination(res.data.pagination);
-
-            // Fetch engagements for each activity
             const engMap = {};
             await Promise.all(
                 res.data.activities.map(async (act) => {
@@ -51,64 +44,61 @@ const Dashboard = () => {
                 })
             );
             setEngagements(engMap);
-        } catch (err) {
+        } catch {
             toast.error('Failed to load feed');
         } finally {
             setLoading(false);
         }
     }, [page]);
 
-    useEffect(() => {
-        fetchFeed();
-    }, [fetchFeed]);
+    useEffect(() => { fetchFeed(); }, [fetchFeed]);
 
     const handleEngage = async (activityId, type) => {
         try {
             await toggleEngagement(activityId, type);
-            // Refresh engagements for this activity
             const engRes = await getActivityEngagements(activityId);
             setEngagements((prev) => ({ ...prev, [activityId]: engRes.data }));
-        } catch (err) {
+        } catch {
             toast.error('Failed to engage');
         }
+    };
+
+    const getJoinStatus = (activityId) => {
+        const eng = engagements[activityId];
+        if (!eng) return null;
+        const joined = eng.accepted.users.find(e => (e.user?.id || e.userId) === user.id);
+        if (joined) return 'accepted';
+        const pending = eng.pending.users.find(e => (e.user?.id || e.userId) === user.id);
+        if (pending) return 'pending';
+        return null;
     };
 
     const isUserEngaged = (activityId, type) => {
         const eng = engagements[activityId];
         if (!eng) return false;
-        const list = type === 'interested' ? eng.interested.users : eng.me_too.users;
-        return list.some((e) => (e.user?.id || e.userId) === user.id);
+        if (type === 'interested') return eng.interested.users.some(e => (e.user?.id || e.userId) === user.id);
+        return eng.accepted.users.some(e => (e.user?.id || e.userId) === user.id) ||
+            eng.pending.users.some(e => (e.user?.id || e.userId) === user.id);
     };
 
-    if (loading) {
-        return (
-            <div className="loading">
-                <div className="spinner"></div>
-            </div>
-        );
-    }
+    if (loading) return <div className="loading"><div className="spinner"></div></div>;
 
     return (
         <div className="fade-in">
             <div className="page-header">
-                <div>
-                    <h2>Activity Feed</h2>
-                    <p className="subtitle">Stay connected with your network</p>
-                </div>
+                <h2>Activity Feed</h2>
+                <p className="subtitle">Stay connected with your network</p>
             </div>
 
             {activities.length === 0 ? (
                 <div className="empty-state">
-                    <div className="icon">📡</div>
+                    <div className="icon">◉</div>
                     <h3>No activities yet</h3>
-                    <p>Start by posting an activity or connecting with people!</p>
+                    <p>Start by posting an activity or connecting with people</p>
                 </div>
             ) : (
                 activities.map((act) => {
-                    const eng = engagements[act.id] || {
-                        interested: { count: 0 },
-                        me_too: { count: 0 },
-                    };
+                    const eng = engagements[act.id] || { interested: { count: 0 }, me_too: { count: 0 } };
                     return (
                         <div key={act.id} className="card activity-card">
                             <div className="activity-header">
@@ -120,16 +110,7 @@ const Dashboard = () => {
                                     <h3>{act.user?.name}</h3>
                                     <span className="time">{formatDate(act.createdAt)}</span>
                                 </div>
-                                <span
-                                    style={{
-                                        marginLeft: 'auto',
-                                        fontSize: '0.75rem',
-                                        padding: '4px 10px',
-                                        borderRadius: 20,
-                                        background: act.audience === 'public' ? 'rgba(0, 206, 201, 0.15)' : 'rgba(108, 92, 231, 0.15)',
-                                        color: act.audience === 'public' ? '#00cec9' : '#a29bfe',
-                                    }}
-                                >
+                                <span className={`audience-badge ${act.audience === 'public' ? 'audience-public' : 'audience-friends'}`}>
                                     {act.audience === 'public' ? '🌍 Public' : '👥 Friends'}
                                 </span>
                             </div>
@@ -138,9 +119,7 @@ const Dashboard = () => {
                             {act.description && <p className="activity-desc">{act.description}</p>}
 
                             <div className="activity-meta">
-                                {act.location && (
-                                    <span className="activity-meta-item">📍 {act.location}</span>
-                                )}
+                                {act.location && <span className="activity-meta-item">📍 {act.location}</span>}
                                 <span className="activity-meta-item">🗓️ {formatActivityTime(act.time)}</span>
                             </div>
 
@@ -152,11 +131,20 @@ const Dashboard = () => {
                                     ✨ Interested <span className="count">{eng.interested?.count || 0}</span>
                                 </button>
                                 <button
-                                    className={`action-btn ${isUserEngaged(act.id, 'me_too') ? 'active' : ''}`}
+                                    className={`action-btn ${getJoinStatus(act.id) ? 'active' : ''}`}
                                     onClick={() => handleEngage(act.id, 'me_too')}
+                                    disabled={getJoinStatus(act.id) === 'accepted'}
                                 >
-                                    🙋 Me Too! <span className="count">{eng.me_too?.count || 0}</span>
+                                    {getJoinStatus(act.id) === 'pending' ? '⏳ Pending' :
+                                        getJoinStatus(act.id) === 'accepted' ? '✅ Joined' : '🙋 Join Activity'}
+                                    <span className="count">{eng.accepted?.count || 0}</span>
                                 </button>
+
+                                {(getJoinStatus(act.id) === 'accepted' || act.userId === user.id) && (
+                                    <a href={`/chat/${act.id}`} className="action-btn chat-btn">
+                                        💬 Chat
+                                    </a>
+                                )}
                             </div>
                         </div>
                     );

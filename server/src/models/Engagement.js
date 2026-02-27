@@ -21,6 +21,10 @@ const Engagement = sequelize.define('Engagement', {
         type: DataTypes.ENUM('interested', 'me_too'),
         allowNull: false,
     },
+    status: {
+        type: DataTypes.ENUM('pending', 'accepted', 'declined'),
+        defaultValue: 'pending',
+    },
 }, {
     tableName: 'engagements',
     timestamps: true,
