@@ -15,6 +15,7 @@ const activityRoutes = require('./routes/activities');
 const connectionRoutes = require('./routes/connections');
 const engagementRoutes = require('./routes/engagements');
 const notificationRoutes = require('./routes/notifications');
+const chatRoutes = require('./routes/chats');
 
 const app = express();
 const server = http.createServer(app);
@@ -34,6 +35,7 @@ app.use('/api/activities', activityRoutes);
 app.use('/api/connections', connectionRoutes);
 app.use('/api/engagements', engagementRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/chats', chatRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

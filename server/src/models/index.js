@@ -3,6 +3,7 @@ const Activity = require('./Activity');
 const Connection = require('./Connection');
 const Engagement = require('./Engagement');
 const Notification = require('./Notification');
+const ChatMessage = require('./ChatMessage');
 
 // User <-> Activity
 User.hasMany(Activity, { foreignKey: 'userId', as: 'activities' });
@@ -25,4 +26,10 @@ Notification.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
 Notification.belongsTo(User, { foreignKey: 'relatedUserId', as: 'relatedUser' });
 Notification.belongsTo(Activity, { foreignKey: 'relatedActivityId', as: 'relatedActivity' });
 
-module.exports = { User, Activity, Connection, Engagement, Notification };
+// Chat associations
+Activity.hasMany(ChatMessage, { foreignKey: 'activityId', as: 'messages' });
+ChatMessage.belongsTo(Activity, { foreignKey: 'activityId', as: 'activity' });
+User.hasMany(ChatMessage, { foreignKey: 'userId', as: 'messages' });
+ChatMessage.belongsTo(User, { foreignKey: 'user', as: 'sender' });
+
+module.exports = { User, Activity, Connection, Engagement, Notification, ChatMessage };
