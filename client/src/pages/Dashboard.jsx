@@ -92,7 +92,7 @@ const Dashboard = () => {
 
             {activities.length === 0 ? (
                 <div className="empty-state">
-                    <div className="icon">◉</div>
+                    <div className="empty-state-icon">◉</div>
                     <h3>No activities yet</h3>
                     <p>Start by posting an activity or connecting with people</p>
                 </div>

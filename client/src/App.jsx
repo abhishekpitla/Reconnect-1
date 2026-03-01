@@ -109,14 +109,7 @@ const App = () => (
                     position="top-right"
                     toastOptions={{
                         duration: 3000,
-                        style: {
-                            background: '#1c1c1e',
-                            color: '#f5f5f7',
-                            border: '1px solid rgba(255,255,255,0.06)',
-                            borderRadius: '12px',
-                            fontSize: '0.85rem',
-                            backdropFilter: 'blur(20px)',
-                        },
+                        className: 'toast-glass',
                     }}
                 />
                 <Routes>
