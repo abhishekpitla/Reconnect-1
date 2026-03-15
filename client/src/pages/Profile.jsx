@@ -111,11 +111,11 @@ const Profile = () => {
                                 {act.title}
                             </h4>
                             {act.description && (
-                                <p style={{ fontSize: '0.85rem', color: 'rgba(245,245,247,0.65)', lineHeight: 1.5, marginBottom: 8 }}>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 8 }}>
                                     {act.description}
                                 </p>
                             )}
-                            <div style={{ display: 'flex', gap: 16, fontSize: '0.78rem', color: 'rgba(245,245,247,0.4)' }}>
+                            <div style={{ display: 'flex', gap: 16, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                                 {act.location && <span>📍 {act.location}</span>}
                                 <span>🗓️ {formatDate(act.time)}</span>
                             </div>

@@ -94,7 +94,7 @@ const Friends = () => {
 
             {searchResults.length > 0 && (
                 <div style={{ marginBottom: 24 }}>
-                    <h3 style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: 12, color: 'var(--text-dark-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <h3 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         Search Results
                     </h3>
                     <div className="search-results">
@@ -151,7 +151,7 @@ const Friends = () => {
                                 className="btn btn-ghost btn-sm"
                                 onClick={() => handleRemove(f.connectionId)}
                                 title="Remove connection"
-                                style={{ color: 'var(--text-light-muted)' }}
+                                style={{ color: 'var(--text-muted)' }}
                             >
                                 ✕
                             </button>
@@ -172,15 +172,15 @@ const Friends = () => {
                             <img
                                 src={req.requester?.profilePicture || `https://api.dicebear.com/9.x/avataaars/svg?seed=${req.requester?.name}`}
                                 alt={req.requester?.name}
-                                style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)' }}
+                                style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid var(--border)' }}
                             />
                             <div style={{ flex: 1 }}>
-                                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-light)' }}>{req.requester?.name}</h4>
-                                <p style={{ fontSize: '0.78rem', color: 'var(--text-light-muted)' }}>{req.requester?.email}</p>
+                                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{req.requester?.name}</h4>
+                                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{req.requester?.email}</p>
                             </div>
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <button className="btn btn-primary btn-sm" onClick={() => handleAccept(req.id)}>Accept</button>
-                                <button className="btn btn-ghost btn-sm" onClick={() => handleRemove(req.id)} style={{ color: 'var(--text-light-muted)' }}>Decline</button>
+                                <button className="btn btn-ghost btn-sm" onClick={() => handleRemove(req.id)} style={{ color: 'var(--text-muted)' }}>Decline</button>
                             </div>
                         </div>
                     ))}
@@ -199,11 +199,11 @@ const Friends = () => {
                             <img
                                 src={req.recipient?.profilePicture || `https://api.dicebear.com/9.x/avataaars/svg?seed=${req.recipient?.name}`}
                                 alt={req.recipient?.name}
-                                style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)' }}
+                                style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid var(--border)' }}
                             />
                             <div style={{ flex: 1 }}>
-                                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-light)' }}>{req.recipient?.name}</h4>
-                                <p style={{ fontSize: '0.78rem', color: 'var(--text-light-muted)' }}>{req.recipient?.email}</p>
+                                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{req.recipient?.name}</h4>
+                                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{req.recipient?.email}</p>
                             </div>
                             <span style={{
                                 fontSize: '0.78rem', color: 'var(--warning)', background: 'var(--warning-subtle)',
