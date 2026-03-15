@@ -22,9 +22,8 @@ const Friends = () => {
         try {
             const [f, p] = await Promise.all([getFriends(), getPendingRequests()]);
             setFriends(f.data.friends || []);
-            const pendingReqs = p.data.requests || [];
-            setIncoming(pendingReqs.filter(r => r.recipientId === user.id));
-            setSent(pendingReqs.filter(r => r.requesterId === user.id));
+            setIncoming(p.data.incoming || []);
+            setSent(p.data.outgoing || []);
         } catch { toast.error('Failed to load connections'); }
         finally { setLoading(false); }
     };

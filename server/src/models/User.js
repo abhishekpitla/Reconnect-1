@@ -32,6 +32,14 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING(300),
         defaultValue: '',
     },
+    story: {
+        type: DataTypes.TEXT,
+        defaultValue: '',
+    },
+    bannerImage: {
+        type: DataTypes.STRING(500),
+        defaultValue: '',
+    },
 }, {
     tableName: 'users',
     timestamps: true,

@@ -5,7 +5,9 @@ const { Op } = require('sequelize');
 exports.updateProfileValidation = [
     body('name').optional().trim().isLength({ max: 50 }).withMessage('Name cannot exceed 50 characters'),
     body('bio').optional().isLength({ max: 300 }).withMessage('Bio cannot exceed 300 characters'),
+    body('story').optional().isString(),
     body('profilePicture').optional().isString(),
+    body('bannerImage').optional().isString(),
 ];
 
 exports.getProfile = async (req, res) => {
@@ -22,11 +24,13 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, bio, profilePicture } = req.body;
+        const { name, bio, story, profilePicture, bannerImage } = req.body;
         const updates = {};
         if (name !== undefined) updates.name = name;
         if (bio !== undefined) updates.bio = bio;
+        if (story !== undefined) updates.story = story;
         if (profilePicture !== undefined) updates.profilePicture = profilePicture;
+        if (bannerImage !== undefined) updates.bannerImage = bannerImage;
 
         await User.update(updates, { where: { id: req.user.id } });
         const user = await User.findByPk(req.user.id);

@@ -30,6 +30,6 @@ Notification.belongsTo(Activity, { foreignKey: 'relatedActivityId', as: 'related
 Activity.hasMany(ChatMessage, { foreignKey: 'activityId', as: 'messages' });
 ChatMessage.belongsTo(Activity, { foreignKey: 'activityId', as: 'activity' });
 User.hasMany(ChatMessage, { foreignKey: 'userId', as: 'messages' });
-ChatMessage.belongsTo(User, { foreignKey: 'user', as: 'sender' });
+ChatMessage.belongsTo(User, { foreignKey: 'userId', as: 'sender' });
 
 module.exports = { User, Activity, Connection, Engagement, Notification, ChatMessage };
